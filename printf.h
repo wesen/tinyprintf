@@ -101,6 +101,9 @@ void init_printf(void *putp, void (*putf) (void *, char));
 void tfp_printf(const char *fmt, ...);
 void tfp_sprintf(char *s, const char *fmt, ...);
 int tfp_snprintf(char *s, unsigned int len, const char *fmt, ...);
+void tfp_vprintf(const char *fmt, va_list va);
+void tfp_vsprintf(char *s, const char *fmt, va_list va);
+int tfp_vsnprintf(char *s, unsigned int len, const char *fmt, va_list va);
 
 void tfp_format(void *putp, void (*putf) (void *, char), const char *fmt, va_list va);
 

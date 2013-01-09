@@ -288,8 +288,12 @@ void tfp_printf(const char *fmt, ...)
 {
     va_list va;
     va_start(va, fmt);
-    tfp_format(stdout_putp, stdout_putf, fmt, va);
+    tfp_vprintf(fmt, va);
     va_end(va);
+}
+
+void tfp_vprintf(const char *fmt, va_list va) {
+  tfp_format(stdout_putp, stdout_putf, fmt, va);
 }
 
 static void putcp(void *p, char c)
@@ -301,9 +305,13 @@ void tfp_sprintf(char *s, const char *fmt, ...)
 {
     va_list va;
     va_start(va, fmt);
-    tfp_format(&s, putcp, fmt, va);
-    putcp(&s, 0);
+    tfp_vsprintf(s, fmt, va);
     va_end(va);
+}
+
+void tfp_vsprintf(char *s, const char *fmt, va_list va) {
+  tfp_format(&s, putcp, fmt, va);
+  putcp(&s, 0);
 }
 
 struct sprintf_info {
@@ -324,12 +332,17 @@ int tfp_snprintf(char *s, unsigned int len, const char *fmt, ...)
 {
     va_list va;
     va_start(va, fmt);
-    struct sprintf_info info = {
-        .len = len,
-        .s = &s
-    };
-    tfp_format(&info, putcnp, fmt, va);
-    putcp(&s, 0);
+    int ret = tfp_vsnprintf(s, len, fmt, va);
     va_end(va);
-    return len - info.len + 1;
+    return ret;
+}
+
+int tfp_vsnprintf(char *s, unsigned int len, const char *fmt, va_list va) {
+  struct sprintf_info info = {
+      .len = len,
+      .s = &s
+  };
+  tfp_format(&info, putcnp, fmt, va);
+  putcp(&s, 0);
+  return len - info.len + 1;
 }
