@@ -210,7 +210,7 @@ void tfp_format(void *putp, putcf putf, const char *fmt, va_list va)
 
             /* Width */
             if (ch >= '0' && ch <= '9') {
-                ch = a2i(ch, &fmt, 10, &(p.width));
+                ch = a2i(ch, &fmt, 10, (int *)&(p.width));
             }
 #ifdef PRINTF_LONG_SUPPORT
             if (ch == 'l') {
@@ -303,4 +303,32 @@ void tfp_sprintf(char *s, const char *fmt, ...)
     tfp_format(&s, putcp, fmt, va);
     putcp(&s, 0);
     va_end(va);
+}
+
+struct sprintf_info {
+  char **s;
+  unsigned int len;
+};
+
+static void putcnp(void *p, char c) {
+  struct sprintf_info *info = p;
+  // leave space for terminating 0
+  if (info->len > 1) {
+    *(*((char **)info->s))++ = c;
+    info->len--;
+  }
+}
+
+int tfp_snprintf(char *s, unsigned int len, const char *fmt, ...)
+{
+    va_list va;
+    va_start(va, fmt);
+    struct sprintf_info info = {
+        .len = len,
+        .s = &s
+    };
+    tfp_format(&info, putcnp, fmt, va);
+    putcp(&s, 0);
+    va_end(va);
+    return len - info.len + 1;
 }

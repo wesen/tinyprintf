@@ -100,11 +100,13 @@ void init_printf(void *putp, void (*putf) (void *, char));
 
 void tfp_printf(const char *fmt, ...);
 void tfp_sprintf(char *s, const char *fmt, ...);
+int tfp_snprintf(char *s, unsigned int len, const char *fmt, ...);
 
 void tfp_format(void *putp, void (*putf) (void *, char), const char *fmt, va_list va);
 
 #define printf tfp_printf
 #define sprintf tfp_sprintf
+#define snprintf tfp_snprintf
 
 #define PRINTF_LONG_SUPPORT
 
